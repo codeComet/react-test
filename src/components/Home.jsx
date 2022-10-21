@@ -1,7 +1,14 @@
 import React from "react";
+import Login from "./Login";
+import Register from "./Register";
 
 const Home = () => {
-  return <div>Home</div>;
+  return (
+    <div>
+      {/* <Login /> */}
+      <Register />
+    </div>
+  );
 };
 
 export default Home;
