@@ -11,18 +11,14 @@ import {
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { VscAccount } from "react-icons/vsc";
-import { Link, useNavigate, Navigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
-import { registerUser } from "../actions/auth";
 
 export default function Register() {
   const classes = useStyles();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [successful, setSuccessful] = useState(false);
-
-  const { message } = useSelector((state) => state.message);
 
   const [formData, setFormData] = useState({
     username: "",
@@ -30,6 +26,8 @@ export default function Register() {
     password: "",
     confirmPassword: "",
   });
+
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({
@@ -43,24 +41,18 @@ export default function Register() {
     if (formData.password !== formData.confirmPassword) {
       toast.error("Passwords do not match!");
     }
-    // console.log(formData);
-    dispatch(
-      registerUser({
+    dispatch({
+      type: "REGISTER_SUCCESS",
+      payload: {
+        id: new Date(),
         username: formData.username,
         email: formData.email,
         password: formData.password,
-      })
-    ).then(() => {
-      toast.success("Registration successful!");
-      navigate("/login");
+      },
     });
+    toast.success("Registration successful!");
+    navigate("/");
   };
-
-  useEffect(() => {
-    if (error) {
-      toast.error(error);
-    }
-  }, [error]);
 
   return (
     <Box className={classes.container}>

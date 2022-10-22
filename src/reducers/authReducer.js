@@ -4,45 +4,45 @@ import {
   REGISTER_SUCCESS,
   REGISTER_FAIL,
   LOGOUT,
-} from "../actions/actionTypes";
+} from "../actions/actions";
 
-const user = JSON.parse(localStorage.getItem("user"));
+const initialState = {
+  users: [
+    {
+      username: "admin",
+      password: "Test12345",
+    },
+  ],
+  loggedInUser: null,
+};
 
-const initialState = user
-  ? { isAuthenticated: true, user }
-  : { isAuthenticated: false, user: null };
-
-export default function (state = initialState, action) {
+const reducer = (state = initialState, action) => {
   switch (action.type) {
     case LOGIN_SUCCESS:
+      JSON.stringify(localStorage.setItem("user", action.payload.username));
       return {
         ...state,
-        isAuthenticated: true,
-        user: action.payload,
+        loggedInUser: action.payload,
       };
-    case LOGIN_FAIL:
-      return {
-        ...state,
-        isAuthenticated: false,
-        user: null,
-      };
+
     case REGISTER_SUCCESS:
+      localStorage.setItem(
+        "users",
+        JSON.stringify({ users: [...state.users, action.payload] })
+      );
       return {
         ...state,
-        isAuthenticated: false,
-      };
-    case REGISTER_FAIL:
-      return {
-        ...state,
-        isAuthenticated: false,
+        users: [...state.users, action.payload],
       };
     case LOGOUT:
+      localStorage.removeItem("user");
       return {
         ...state,
-        isAuthenticated: false,
-        user: null,
+        loggedInUser: null,
       };
     default:
       return state;
   }
-}
+};
+
+export default reducer;

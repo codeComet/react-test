@@ -10,23 +10,20 @@ import {
   Divider,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import { Link, useNavigate, Navigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { VscAccount } from "react-icons/vsc";
-import { loginUser } from "../actions/auth";
 
 export default function Login() {
   const classes = useStyles();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { isAuthenticated } = useSelector((state) => state.auth);
-  const { messages } = useSelector((state) => state.message);
-
   const [formData, setFormData] = useState({
     username: "",
     password: "",
   });
+  const users = useSelector((state) => state.users);
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
@@ -39,24 +36,25 @@ export default function Login() {
   const handleSubmit = (e) => {
     e.preventDefault();
     setLoading(true);
+    const user = users.find(
+      (user) =>
+        user.username === formData.username &&
+        user.password === formData.password
+    );
 
-    dispatch(
-      login({ username: formData.username, password: formData.password })
-    )
-      .then(() => {
-        toast.success(messages.success);
-        navigate("/");
-      })
-      .catch(() => {
-        toast.error(messages.error);
-        setLoading(false);
+    if (user) {
+      dispatch({
+        type: "LOGIN_SUCCESS",
+        payload: user,
       });
+      toast.success("Login successful");
+      navigate("/");
+      window.location.reload();
+    } else {
+      toast.error("Username or password is incorrect");
+    }
     setLoading(false);
   };
-
-  if (isAuthenticated) {
-    return <Navigate to="/" />;
-  }
 
   return (
     <Box className={classes.container}>
